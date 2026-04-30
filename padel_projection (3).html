@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coventry Padel Club — 2027 Financial Projection</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080e18;--bg2:#0d1624;--bg3:#111f32;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --green:#00e87a;--green2:#00c264;
+  --cyan:#00c8ff;--gold:#ffb547;--red:#ff5757;
+  --purple:#9b7fff;--orange:#ff8c42;--pink:#ff6eb4;
+  --text:#e2eaf8;--text2:#7a99bb;--text3:#4a6080;
+  --mono:'DM Mono',monospace;--display:'Syne',sans-serif;--body:'DM Sans',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:100vh;
+  background-image:radial-gradient(ellipse 80% 50% at 20% -10%,rgba(0,232,122,0.07) 0%,transparent 60%),
+  radial-gradient(ellipse 60% 40% at 80% 110%,rgba(0,200,255,0.05) 0%,transparent 60%)}
+#app{max-width:1160px;margin:0 auto;padding:28px 18px 60px}
+
+/* Header */
+.header{text-align:center;margin-bottom:28px}
+.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--text3);text-transform:uppercase;margin-bottom:10px}
+h1{font-family:var(--display);font-size:clamp(24px,4vw,40px);font-weight:800;
+  background:linear-gradient(130deg,var(--green) 0%,var(--cyan) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1;margin-bottom:8px}
+.sub{font-size:11px;color:var(--text3);font-family:var(--mono);line-height:1.7}
+
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px}
+.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--c,var(--green))}
+.kpi-label{font-size:9px;font-family:var(--mono);letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin-bottom:6px}
+.kpi-val{font-family:var(--display);font-size:18px;font-weight:700;color:var(--c,var(--green));line-height:1;margin-bottom:4px}
+.kpi-sub{font-size:9px;color:var(--text3);font-family:var(--mono)}
+
+/* Tabs */
+.tabs{display:flex;gap:6px;margin-bottom:16px}
+.tab{padding:8px 16px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);
+  color:var(--text2);cursor:pointer;font-family:var(--body);font-size:12px;font-weight:500;transition:all .15s}
+.tab.active{border-color:var(--green);background:rgba(0,232,122,0.1);color:var(--green)}
+.tab:hover:not(.active){border-color:var(--border2);color:var(--text)}
+
+/* Panel */
+.panel{display:none}.panel.active{display:block}
+
+/* Chart card */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px 16px 14px;margin-bottom:14px}
+.card-title{font-family:var(--display);font-size:14px;font-weight:700;margin-bottom:2px}
+.card-sub{font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:14px}
+.chart-wrap{position:relative;width:100%}
+
+/* Scenario legend row */
+.sc-legend{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.sc-leg-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);font-family:var(--mono)}
+.sc-leg-line{width:20px;height:2px}
+
+/* Legend */
+.legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);font-family:var(--mono)}
+.leg-box{width:12px;height:12px;border-radius:3px}
+.leg-dot{width:8px;height:8px;border-radius:50%;border:1.5px solid white}
+.leg-line{width:18px;height:2.5px;border-radius:2px}
+
+/* Month nav */
+.month-nav{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap}
+.mbtn{flex:1 1 50px;padding:6px 3px;border-radius:8px;border:1px solid var(--border);
+  background:rgba(255,255,255,0.02);cursor:pointer;text-align:center;transition:all .15s;position:relative}
+.mbtn.active{background:rgba(0,232,122,0.1)}
+.mbtn .mi{font-size:13px;display:block}
+.mbtn .mm{font-size:8px;color:var(--text3);font-family:var(--mono);display:block;margin-top:1px}
+.mbtn .ml{font-size:8px;color:var(--text3);font-family:var(--mono);display:block}
+.mbtn.active .ml{color:var(--text);font-weight:600}
+.hols-dot{position:absolute;top:3px;right:4px;width:4px;height:4px;border-radius:50%;background:var(--purple)}
+
+/* Detail panel */
+.detail{border-radius:13px;padding:18px 20px;margin-bottom:14px;transition:all .2s}
+.dh{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.dh-left{display:flex;align-items:center;gap:12px}
+.d-icon{font-size:28px}
+.d-title{font-family:var(--display);font-size:14px;font-weight:700;margin-bottom:3px}
+.d-sub{font-size:11px;color:var(--text2)}
+.d-rev{font-family:var(--display);font-size:20px;font-weight:800;color:var(--green)}
+.d-profit{font-size:11px;color:var(--green)}
+.d-rate{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:2px}
+.badge{display:inline-block;font-size:8px;font-weight:700;font-family:var(--mono);
+  padding:2px 7px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;margin-right:4px}
+.badges{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:3px}
+
+/* Metrics */
+.metrics{background:rgba(0,0,0,0.2);border-radius:10px;padding:12px 14px;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}
+.m-label{font-size:8px;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.occ-bar{display:flex;align-items:center;gap:7px}
+.occ-track{flex:1;height:5px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden}
+.occ-fill{height:100%;border-radius:3px}
+.occ-pct{font-size:11px;font-weight:700;font-family:var(--mono);min-width:34px}
+.mix-bar{display:flex;height:6px;border-radius:3px;overflow:hidden;gap:1px;margin-top:4px}
+.mix-seg{height:100%;min-width:2px}
+.mix-labels{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.mix-lbl{font-size:9px;font-family:var(--mono)}
+
+.driver-note{background:rgba(255,255,255,0.03);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--text3);margin-bottom:10px}
+.driver-note span{color:var(--text2);font-weight:600}
+
+.bullets{list-style:none}
+.bullets li{display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;font-size:12px;color:#c8d8eb;line-height:1.65}
+.arr{flex-shrink:0;margin-top:3px;font-size:10px}
+
+/* Table */
+.tbl-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px}
+.tbl-head,.tbl-row,.tbl-foot{display:grid;grid-template-columns:1.4fr .6fr .6fr 1.1fr .7fr .8fr 1fr;padding:6px 12px}
+.tbl-head{background:rgba(255,255,255,0.03);border-bottom:1px solid var(--border)}
+.tbl-row{cursor:pointer;transition:background .1s;border-left:3px solid transparent}
+.tbl-row:nth-child(even){background:rgba(255,255,255,0.01)}
+.tbl-row:hover{background:rgba(255,255,255,0.03)}
+.tbl-row.active{background:rgba(0,232,122,0.06);border-left-color:var(--green)}
+.tbl-foot{background:rgba(0,232,122,0.05);border-top:1px solid var(--border)}
+.th{font-size:8px;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:1px}
+.td{font-size:10px;font-family:var(--mono)}
+
+/* Payback hero */
+.pb-hero{background:rgba(0,232,122,0.07);border:1px solid rgba(0,232,122,0.25);
+  border-radius:14px;padding:24px;text-align:center;margin-bottom:14px}
+.pb-label{font-size:10px;font-family:var(--mono);color:var(--text3);letter-spacing:3px;text-transform:uppercase;margin-bottom:8px}
+.pb-val{font-family:var(--display);font-size:clamp(20px,4vw,32px);font-weight:800;color:var(--green);margin-bottom:6px}
+.pb-sub{font-size:13px;color:var(--text2)}
+.pb-stats{display:flex;justify-content:center;gap:28px;margin-top:16px;flex-wrap:wrap}
+.pb-stat-lbl{font-size:8px;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+.pb-stat-val{font-family:var(--display);font-size:18px;font-weight:700}
+
+/* CAPEX table */
+.cpx-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.cpx-head,.cpx-row,.cpx-foot{display:grid;grid-template-columns:1.2fr 1fr 1fr 1.2fr 1.5fr;padding:6px 12px}
+.cpx-head{background:rgba(255,255,255,0.03);border-bottom:1px solid var(--border)}
+.cpx-row:nth-child(even){background:rgba(255,255,255,0.01)}
+.cpx-row.pb-row{background:rgba(0,232,122,0.08);border-left:3px solid var(--green)}
+.cpx-foot{background:rgba(0,232,122,0.05);border-top:1px solid var(--border)}
+
+/* Scenario cards */
+.sc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:14px}
+.sc-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;border-top-width:3px}
+.sc-name{font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.sc-annual{font-family:var(--display);font-size:20px;font-weight:800;margin-bottom:2px}
+.sc-monthly{font-size:11px;color:var(--text2);font-family:var(--mono);margin-bottom:8px}
+.sc-desc{font-size:10px;color:var(--text3);line-height:1.5}
+.sc-tag{font-size:9px;font-family:var(--mono);margin-top:8px;font-style:italic}
+
+/* Footer */
+.footer{font-size:9px;color:var(--text3);font-family:var(--mono);line-height:1.9;margin-top:10px}
+.footer strong{color:var(--text3);opacity:.8}
+
+@media(max-width:700px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .tbl-head,.tbl-row,.tbl-foot{grid-template-columns:1.3fr .6fr 1fr .9fr}
+  .tbl-head>*:nth-child(3),.tbl-row>*:nth-child(3),.tbl-foot>*:nth-child(3),
+  .tbl-head>*:nth-child(5),.tbl-row>*:nth-child(5),.tbl-foot>*:nth-child(5){display:none}
+  .cpx-head,.cpx-row,.cpx-foot{grid-template-columns:1fr 1fr 1.2fr}
+  .cpx-head>*:nth-child(n+4),.cpx-row>*:nth-child(n+4),.cpx-foot>*:nth-child(n+4){display:none}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<div class="header">
+  <div class="eyebrow">Coventry Indoor Padel Club · 4-Court Model · Investor Financial Projection</div>
+  <h1>January – December 2027</h1>
+  <div class="sub">
+    All court hire net of 4% Playtomic fee &nbsp;·&nbsp; £20/hr launch → £40/£32 (Mar) → £44/£36 (Jun)
+    &nbsp;·&nbsp; Memberships from Jul &nbsp;·&nbsp; Club Credit from Aug
+  </div>
+</div>
+
+<div class="kpis" id="kpis"></div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('revenue',this)">📊 Revenue Projection</button>
+  <button class="tab" onclick="switchTab('capex',this)">💰 CAPEX Payback</button>
+  <button class="tab" onclick="switchTab('scenarios',this)">🎯 Scenarios</button>
+</div>
+
+<!-- REVENUE PANEL -->
+<div class="panel active" id="panel-revenue">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-bottom:6px">
+      <div>
+        <div class="card-title">Monthly Revenue · Jan–Dec 2027</div>
+        <div class="card-sub">Court hire net of 4% Playtomic fee · Purple dot = school holiday · Click bar to explore</div>
+      </div>
+      <div class="sc-legend" id="sc-leg"></div>
+    </div>
+    <div class="chart-wrap"><canvas id="revChart" height="300"></canvas></div>
+    <div class="legend" id="rev-legend"></div>
+  </div>
+
+  <div class="month-nav" id="month-nav"></div>
+  <div class="detail" id="detail-panel"></div>
+
+  <div class="tbl-wrap">
+    <div class="tbl-head">
+      <div class="th">Month</div><div class="th">Occ</div><div class="th">Rate</div>
+      <div class="th">Court Hire (net)</div><div class="th">Café/Shop</div>
+      <div class="th">Members</div><div class="th">Total · Profit</div>
+    </div>
+    <div id="tbl-body"></div>
+    <div class="tbl-foot" id="tbl-foot"></div>
+  </div>
+</div>
+
+<!-- CAPEX PANEL -->
+<div class="panel" id="panel-capex">
+  <div class="pb-hero">
+    <div class="pb-label">CAPEX Payback</div>
+    <div class="pb-val">Month 11 — November 2027</div>
+    <div class="pb-sub">Initial investment of <strong style="color:white">£220,562</strong> fully recovered within Year 1</div>
+    <div class="pb-stats" id="pb-stats"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Cumulative Cashflow vs CAPEX Recovery</div>
+    <div class="card-sub">Line crosses zero when CAPEX is fully recovered · Starting position: –£220,562</div>
+    <div class="chart-wrap"><canvas id="capexChart" height="260"></canvas></div>
+  </div>
+  <div class="cpx-wrap">
+    <div class="cpx-head">
+      <div class="th">Month</div><div class="th">Revenue</div><div class="th">Monthly Profit</div>
+      <div class="th">Cumulative</div><div class="th">Status</div>
+    </div>
+    <div id="cpx-body"></div>
+    <div class="cpx-foot" id="cpx-foot"></div>
+  </div>
+</div>
+
+<!-- SCENARIOS PANEL -->
+<div class="panel" id="panel-scenarios">
+  <div class="card">
+    <div class="card-title">Revenue Scenarios — Monthly Reference Lines</div>
+    <div class="card-sub">All four BP scenarios shown simultaneously · White line = this projection · Annual figures from business plan</div>
+    <div class="chart-wrap"><canvas id="scChart" height="280"></canvas></div>
+  </div>
+  <div class="sc-grid" id="sc-cards"></div>
+</div>
+
+<div class="footer"><strong>Model assumptions:</strong>
+4 courts · 17hr/day (6am–11pm) · 2,063 court-hours/month · Monthly OpEx £20,912 ·
+Court hire shown net of 4% Playtomic booking platform fee ·
+Coaching, bundles and club credit are occupancy drivers included within court hire revenue ·
+Café/pro shop tied to occupancy × £1,500 max · Memberships £20/month from Jul 2027 ·
+Club credit post-membership (Aug 2027) · Holiday bundles: Feb half term, Jul/Aug summer, Oct half term ·
+CAPEX £220,562 tracked separately · Payback achieved Month 11 (Nov 2027).
+</div>
+</div>
+
+<script>
+/* ── DATA ─────────────────────────────────────────────────────── */
+const OPEX=20912,CAPEX=220562,WORST=27040,BELOW=33280,REAL=54773,OPT=58240;
+
+const data=[
+  {m:"M1", cal:"Jan 2027",occ:.82,rate:20.00,net:33435,fee:1393,drC:1000,drB:0,   drX:0,   cafe:1230,mbr:0,   tot:34665,profit:13753,cumul:-206809},
+  {m:"M2", cal:"Feb 2027",occ:.71,rate:20.00,net:29462,fee:1228,drC:500, drB:900, drX:0,   cafe:1065,mbr:0,   tot:30527,profit:9615, cumul:-197194},
+  {m:"M3", cal:"Mar 2027",occ:.50,rate:36.84,net:37339,fee:1556,drC:900, drB:0,   drX:0,   cafe:750, mbr:0,   tot:38089,profit:17177,cumul:-180017},
+  {m:"M4", cal:"Apr 2027",occ:.55,rate:36.84,net:40794,fee:1700,drC:700, drB:0,   drX:0,   cafe:825, mbr:0,   tot:41619,profit:20707,cumul:-159310},
+  {m:"M5", cal:"May 2027",occ:.57,rate:36.84,net:42541,fee:1773,drC:1000,drB:0,   drX:0,   cafe:855, mbr:0,   tot:43396,profit:22484,cumul:-136826},
+  {m:"M6", cal:"Jun 2027",occ:.55,rate:40.84,net:46111,fee:1921,drC:1700,drB:0,   drX:0,   cafe:825, mbr:0,   tot:46936,profit:26024,cumul:-110802},
+  {m:"M7", cal:"Jul 2027",occ:.52,rate:40.84,net:44645,fee:1860,drC:1500,drB:1200,drX:0,   cafe:780, mbr:400, tot:45825,profit:24913,cumul:-85889},
+  {m:"M8", cal:"Aug 2027",occ:.40,rate:40.84,net:36284,fee:1512,drC:1600,drB:1800,drX:700, cafe:600, mbr:900, tot:37784,profit:16872,cumul:-69017},
+  {m:"M9", cal:"Sep 2027",occ:.58,rate:40.84,net:49113,fee:2046,drC:1200,drB:0,   drX:1100,cafe:870, mbr:1400,tot:51383,profit:30471,cumul:-38546},
+  {m:"M10",cal:"Oct 2027",occ:.63,rate:40.84,net:54596,fee:2275,drC:1300,drB:1100,drX:1400,cafe:945, mbr:1700,tot:57241,profit:36329,cumul:-2217},
+  {m:"M11",cal:"Nov 2027",occ:.64,rate:40.84,net:54349,fee:2265,drC:1500,drB:0,   drX:1200,cafe:960, mbr:2000,tot:57309,profit:36397,cumul:34180},
+  {m:"M12",cal:"Dec 2027",occ:.63,rate:40.84,net:54020,fee:2251,drC:2200,drB:0,   drX:1000,cafe:945, mbr:2000,tot:56965,profit:36053,cumul:70233},
+];
+
+const hols={M2:"🎒 Feb Half Term",M4:"🐣 Easter",M5:"🌸 May Half Term",
+  M7:"☀️ Summer",M8:"☀️ Summer Peak",M10:"🍂 Oct Half Term",M12:"🎄 Christmas"};
+const pricing=m=>["M1","M2"].includes(m)?"£20/hr flat (launch)":
+  ["M3","M4","M5"].includes(m)?"£40pk / £32 off":"£44pk / £36 off";
+
+const ms={
+  M1:{icon:"🏆",color:"#7c6eff",title:"Grand Opening",badge:"LAUNCH",headline:"82% occupancy · £20/hr launch pricing · All court hire net of 4% Playtomic fee",
+    bullets:["Court hire at £20/hr (half price) for M1 & M2 — launch pricing to drive footfall and generate word of mouth from day one","Opening tournament: 16 players × £30 entry · Racket grand prize · 2nd place gets club credit · 3rd gets entry refund + free next event · Branded T-shirts for all participants","Intro to Padel sessions × 3 evenings/week · 6 players @ £10 each — introduces new players in a safe, guided environment","Pro shop open from day 1 — rackets, balls, grips and accessories on sale","Free coffee & pastry 6–10am daily to seed early-morning booking habits and fill off-peak slots"]},
+  M2:{icon:"📱",color:"#9b7fff",title:"Social Blitz + Feb Half Term",badge:"HALF TERM",headline:"71% occupancy · Feb half term bundles · Mix-ins launch · Partnerships announced",
+    bullets:["February half term (~16–20 Feb 2027): adult + junior bundle packages — 5-session coaching cards, family court hire, parent & child sessions added to the schedule","Ramped social media giveaways — court time, rackets, branded gear driving organic reach and new sign-ups","Café partnerships announced (e.g. Juices4Lyf) — cross-promotion to their existing audience","Weekly social mix-in sessions launched — paid group bookings filling off-peak morning slots","Free drink & pastry 6–10am continues — early-morning habit now converting to repeat weekly bookings"]},
+  M3:{icon:"🎾",color:"#00c8ff",title:"Leagues Begin · Price Rise",badge:"PRICES UP",headline:"50% occupancy · £40pk/£32off · Revenue rises despite occupancy dip from price doubling",
+    bullets:["Prices rise to £40 peak / £32 off-peak · Peak hours: Mon–Fri 6–9am & 4–11pm; Sat–Sun 6am–12pm & 6–11pm","Occupancy dips to 50% as price doubles — expected and planned. Revenue still rises as blended £36.84/hr far exceeds £20/hr launch rate","Leagues begin — regular weekly slots locking in peak hours reliably for the season ahead","Expanded coaching schedule — group and 1-to-1 sessions added to the weekly timetable","Corporate outreach begins — targeting weekday daytime slots for team sessions and client entertainment"]},
+  M4:{icon:"📊",color:"#00c264",title:"Community Consolidation",badge:"EASTER",headline:"55% occupancy · Easter holidays · Seasonal tournament model — no monthly tournaments",
+    bullets:["No monthly tournament this month — tournaments are seasonal (quarterly) to preserve exclusivity and player excitement","Easter school holidays (Apr 2027): family court hire, junior coaching and parent-and-child programming offered alongside the adult schedule","Leagues in full swing — peak time slots reliably sold weeks in advance by regular players","Corporate outreach converting — initial daytime team bookings being confirmed","Coaching cohorts growing — beginner intro players converting into regular league participants"]},
+  M5:{icon:"🌸",color:"#00c8b4",title:"May Half Term + Steady Growth",badge:"HALF TERM",headline:"57% occupancy · May half term · Community solidifying ahead of pricing changes",
+    bullets:["May half term (late May 2027): junior coaching and family court hire packages run alongside the normal adult schedule","Community well-established — repeat regulars and league players forming the reliable revenue backbone","Café partnership income growing steadily alongside pro shop sales","Membership scheme finalised ahead of July launch — soft promotion to existing regulars beginning now","Social media following growing — league highlights and player content driving organic reach week-on-week"]},
+  M6:{icon:"🎓",color:"#c084fc",title:"Group Coaching Courses · Price Rise",badge:"PRICES UP",headline:"55% occupancy · £44pk/£36off · Weekly group courses · Membership announced for July",
+    bullets:["Prices rise to £44 peak / £36 off-peak (blended £40.84/hr) — second and final planned price rise of Year 1","Weekly group coaching courses launched across Beginner, Intermediate and Advanced levels — multiple sessions per week filling off-peak courts","Membership scheme communicated to all existing customers — launching July 2027, soft sign-up interest list opened","Americano events and themed evenings introduced — boosting social engagement and weekend footfall significantly"]},
+  M7:{icon:"💳",color:"#ff6eb4",title:"Memberships Launch · Summer Bundles",badge:"SUMMER",headline:"52% occupancy · Memberships launched · Summer holiday bundles boosting court hire",
+    bullets:["Memberships launched at £20/month: priority booking (1 month ahead), 10% off court hire, discounted tournament entry, café discounts","Summer holiday bundles: 5-session junior coaching cards, parent + child court hire packages, adult group session bundles — all contributing to court hire revenue","Summer league and outdoor tournaments launched — keeping the community actively engaged with the club brand","Some outdoor migration expected — bundles and kids sessions specifically designed to maintain occupancy through the warmer months"]},
+  M8:{icon:"☀️",color:"#ff5757",title:"Peak Summer — Lowest Occupancy",badge:"SEASONAL DIP",headline:"40% occupancy · Peak outdoor migration · Club credit launches · Still profitable",
+    bullets:["Lowest occupancy of the year (40%) — peak outdoor migration as players shift to outdoor courts during August","Club credit scheme launched (post-membership) — players buy bulk court time upfront at a discount, locking in future loyalty and advance cash flow","Summer holiday bundles at full capacity — kids group training, family sessions and junior camps filling court slots through the month","STILL PROFITABLE: £37,784 total revenue vs £20,912 OpEx — £16,872 monthly profit even in the worst month of the entire year"]},
+  M9:{icon:"🍂",color:"#00e87a",title:"Autumn Bounce",badge:"STRONG RETURN",headline:"58% occupancy · Outdoor season ends · Club credit driving advance bookings",
+    bullets:["Autumn tournament held — returning players, high energy, strong new membership sign-ups as the competitive season restarts","Outdoor courts closing — indoor demand surges back sharply from the August low point","Club credit sales gaining strong traction — players purchasing autumn and winter court bundles at a discount","New league season begins — locking in regular peak-time bookings reliably through to Christmas","Coaching schedule running at capacity — waiting lists forming for the most popular group sessions"]},
+  M10:{icon:"🏢",color:"#38bdf8",title:"Oct Half Term + Corporate Ramp",badge:"HALF TERM",headline:"63% occupancy · October half term bundles · Corporate bookings filling daytime slots",
+    bullets:["October half term (late Oct 2027): junior and family bundles at peak — kids coaching, parent + child sessions, family court packages running all week","Corporate end-of-year event bookings begin filling weekday daytime courts — team-building and client entertainment packages confirmed","Club credit sales at their highest point — players stocking up ahead of the Christmas season","Leagues at full capacity — autumn season reaching its competitive peak with finals approaching and attendance high"]},
+  M11:{icon:"🎉",color:"#ff8c42",title:"Pre-Holiday Peak · CAPEX Recovered",badge:"CAPEX PAID ✅",headline:"64% occupancy · CAPEX fully recovered this month · Corporate Christmas peak",
+    bullets:["CAPEX PAYBACK ACHIEVED IN MONTH 11 — cumulative cashflow turns positive and the initial investment of £220,562 is fully recovered","Corporate Christmas party bookings filling daytime courts consistently through the entire month — highest daytime utilisation of the year","Seasonal winter tournament held — end of autumn league season with high participation, competitive atmosphere and strong member engagement","Gift vouchers and memberships promoted as Christmas presents across all social channels — pre-selling Year 2 membership demand","Membership base now providing £2,000/month guaranteed recurring revenue that continues into Year 2 from day one"]},
+  M12:{icon:"🎄",color:"#ffb547",title:"Holiday Tournament · Year-End",badge:"YEAR CLOSE",headline:"63% occupancy · Holiday tournament · Year 1 closes at £541,739 total revenue",
+    bullets:["Holiday tournament: larger field, festive prize fund, Christmas atmosphere — the biggest and best community event of Year 1","Membership base provides £2,000 guaranteed recurring revenue that repeats automatically every month straight into Year 2","Christmas corporate bookings at peak — daytime courts fully utilised through to mid-January 2028 from advance bookings","Christmas holidays: junior camps, family bundles and festive social events keeping courts active through the school break","Year 1 closes at £541,739 — a deliberately conservative ramp that proves the model works before scaling in Year 2"]},
+};
+
+/* ── HELPERS ─────────────────────────────────────────────────── */
+const fmt=v=>"£"+Math.round(Math.abs(v)).toLocaleString("en-GB");
+const pct=v=>Math.round(v*100)+"%";
+const occC=o=>o>=.65?"#00e87a":o>=.50?"#ffb547":"#ff5757";
+const sum=(k)=>data.reduce((s,d)=>s+d[k],0);
+
+const totalRev=sum("tot"),totalProfit=sum("profit"),totalFees=sum("fee");
+
+let selMonth="M1";
+let revChart=null,capexChart=null,scChart=null;
+
+/* ── KPIs ─────────────────────────────────────────────────────── */
+const kpiData=[
+  {label:"Year 1 Revenue",  val:fmt(totalRev),    sub:"Net of Playtomic fees",         c:"#00e87a"},
+  {label:"Year 1 Profit",   val:fmt(totalProfit), sub:"Pre-tax · Pre-CAPEX payback",   c:"#00c8ff"},
+  {label:"Playtomic Fees",  val:"("+fmt(totalFees)+")",sub:"4% deducted from court hire",c:"#ff5757"},
+  {label:"CAPEX Payback",   val:"Month 11",        sub:"Nov 2027 — within Year 1",     c:"#ffb547"},
+  {label:"Break-Even",      val:"Month 1",         sub:"Above OpEx from opening day",  c:"#c084fc"},
+];
+document.getElementById("kpis").innerHTML=kpiData.map(k=>
+  `<div class="kpi" style="--c:${k.c}">
+    <div class="kpi-label">${k.label}</div>
+    <div class="kpi-val">${k.val}</div>
+    <div class="kpi-sub">${k.sub}</div>
+  </div>`
+).join("");
+
+/* ── SCENARIO LEGEND ─────────────────────────────────────────── */
+document.getElementById("sc-leg").innerHTML=
+  [{c:"#ff8c42",l:"Worst"},{c:"#ffb547",l:"Below Comp"},{c:"#00c8ff",l:"Realistic"},{c:"#9b7fff",l:"Optimistic"}]
+  .map(s=>`<div class="sc-leg-item">
+    <div class="sc-leg-line" style="background:repeating-linear-gradient(90deg,${s.c} 0 4px,transparent 4px 8px)"></div>${s.l}
+  </div>`).join("");
+
+/* ── PAYBACK STATS ───────────────────────────────────────────── */
+document.getElementById("pb-stats").innerHTML=
+  [{l:"Total CAPEX",v:fmt(CAPEX),c:"#ff5757"},{l:"Year 1 Profit",v:fmt(totalProfit),c:"#00e87a"},
+   {l:"End-of-Year Surplus",v:"+"+fmt(data[11].cumul),c:"#00e87a"},{l:"Payback (months)",v:"11",c:"#ffb547"}]
+  .map(k=>`<div><div class="pb-stat-lbl">${k.l}</div><div class="pb-stat-val" style="color:${k.c}">${k.v}</div></div>`)
+  .join("");
+
+/* ── REVENUE CHART ───────────────────────────────────────────── */
+function buildRevChart(){
+  const ctx=document.getElementById("revChart").getContext("2d");
+  const labels=data.map(d=>d.cal.split(" ")[0]);
+  revChart=new Chart(ctx,{
+    type:"bar",
+    data:{
+      labels,
+      datasets:[
+        {label:"Court Hire (net)",data:data.map(d=>d.net),backgroundColor:"rgba(0,232,122,0.55)",stack:"s"},
+        {label:"Café & Pro Shop", data:data.map(d=>d.cafe),backgroundColor:"rgba(255,181,71,0.6)",stack:"s"},
+        {label:"Memberships",     data:data.map(d=>d.mbr),backgroundColor:"rgba(255,110,180,0.65)",stack:"s"},
+        {label:"Total Revenue",   data:data.map(d=>d.tot),type:"line",
+          borderColor:"rgba(255,255,255,0.9)",borderWidth:2,pointRadius:data.map(d=>hols[d.m]?5:3),
+          pointBackgroundColor:data.map(d=>hols[d.m]?"#9b7fff":"white"),
+          pointBorderColor:"white",pointBorderWidth:data.map(d=>hols[d.m]?1.5:0),
+          fill:false,tension:.35,order:0,yAxisID:"y"},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      animation:{duration:400},
+      onClick:(_,els)=>{if(els.length){selectMonth(data[els[0].index].m)}},
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:"#0d1624",borderColor:"rgba(255,255,255,0.12)",borderWidth:1,
+          titleFont:{family:"Syne,sans-serif",size:13},bodyFont:{family:"DM Mono,monospace",size:11},
+          callbacks:{
+            title:items=>{const d=data[items[0].dataIndex];return d.cal+(hols[d.m]?" · "+hols[d.m]:"")},
+            beforeBody:items=>{
+              const d=data[items[0].dataIndex];
+              return["Occupancy: "+pct(d.occ)+" · "+pricing(d.m),
+                     "Gross court: "+fmt(d.net+d.fee)+" → less Playtomic 4% ("+fmt(d.fee)+")",
+                     "──────────────────────"];
+            },
+            label:item=>{
+              const labels=["Court Hire (net)","Café & Pro Shop","Memberships","Total Revenue"];
+              return" "+labels[item.datasetIndex]+": "+fmt(item.raw);
+            },
+            afterBody:items=>{
+              const d=data[items[0].dataIndex];
+              return["──────────────────────","Monthly profit: "+fmt(d.profit),
+                     "Cumul vs CAPEX: "+(d.cumul>=0?"+":"")+fmt(d.cumul)*(d.cumul<0?-1:1)];
+            }
+          }
+        },
+        annotation:{annotations:{}} // placeholder
+      },
+      scales:{
+        x:{stacked:true,grid:{display:false},ticks:{color:"#4a6080",font:{family:"DM Mono,monospace",size:11}}},
+        y:{stacked:true,grid:{color:"rgba(255,255,255,0.05)"},
+          ticks:{color:"#4a6080",font:{family:"DM Mono,monospace",size:10},
+            callback:v=>"£"+(v/1000).toFixed(0)+"k"},
+          min:0,max:70000}
+      }
+    },
+    plugins:[{
+      id:"refLines",
+      afterDraw(chart){
+        const {ctx,chartArea:{left,right,top,bottom},scales:{y}}=chart;
+        const lines=[
+          {v:OPEX, c:"#ff5757",label:"OpEx £20.9k"},
+          {v:WORST,c:"#ff8c42",label:"Worst £27k"},
+          {v:BELOW,c:"#ffb547",label:"Below £33.3k"},
+          {v:REAL, c:"#00c8ff",label:"Realistic £54.8k"},
+          {v:OPT,  c:"#9b7fff",label:"Optimistic £58.2k"},
+        ];
+        lines.forEach(l=>{
+          const yp=y.getPixelForValue(l.v);
+          ctx.save();
+          ctx.strokeStyle=l.c;ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+          ctx.beginPath();ctx.moveTo(left,yp);ctx.lineTo(right,yp);ctx.stroke();
+          ctx.fillStyle=l.c;ctx.font="9px 'DM Mono',monospace";ctx.textAlign="right";
+          ctx.fillText(l.label,right-4,yp-4);
+          ctx.restore();
+        });
+      }
+    }]
+  });
+
+  document.getElementById("rev-legend").innerHTML=
+    [{c:"#00e87a",label:"Court Hire (net)"},{c:"#ffb547",label:"Café & Pro Shop"},
+     {c:"#ff6eb4",label:"Memberships"},{c:"rgba(255,255,255,0.9)",label:"Total Revenue",line:true},
+     {c:"#9b7fff",label:"School holiday month",dot:true}]
+    .map(l=>`<div class="leg-item">${
+      l.dot?`<div class="leg-dot" style="background:${l.c}"></div>`:
+      l.line?`<div class="leg-line" style="background:${l.c}"></div>`:
+      `<div class="leg-box" style="background:${l.c}"></div>`
+    }${l.label}</div>`).join("");
+}
+
+/* ── CAPEX CHART ─────────────────────────────────────────────── */
+function buildCapexChart(){
+  const ctx=document.getElementById("capexChart").getContext("2d");
+  const grad=ctx.createLinearGradient(0,0,0,260);
+  grad.addColorStop(0,"rgba(0,232,122,0.2)");grad.addColorStop(1,"rgba(0,232,122,0.02)");
+  capexChart=new Chart(ctx,{
+    type:"line",
+    data:{
+      labels:data.map(d=>d.cal.split(" ")[0]),
+      datasets:[{
+        label:"Cumulative Cashflow",data:data.map(d=>d.cumul),
+        borderColor:"#00c264",borderWidth:2.5,fill:true,backgroundColor:grad,tension:.35,
+        pointRadius:data.map(d=>d.m==="M11"?7:3),
+        pointBackgroundColor:data.map(d=>d.cumul>=0?"#00e87a":"#ff5757"),
+        pointBorderColor:"white",pointBorderWidth:data.map(d=>d.m==="M11"?2:0),
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},
+        tooltip:{
+          backgroundColor:"#0d1624",borderColor:"rgba(255,255,255,0.12)",borderWidth:1,
+          titleFont:{family:"Syne,sans-serif",size:12},bodyFont:{family:"DM Mono,monospace",size:11},
+          callbacks:{
+            title:i=>data[i[0].dataIndex].cal,
+            label:i=>{const d=data[i.dataIndex];return[" Monthly profit: "+fmt(d.profit)," Cumulative: "+(d.cumul>=0?"+":"")+fmt(d.cumul)*(d.cumul<0?-1:1)]}
+          }
+        }
+      },
+      scales:{
+        x:{grid:{display:false},ticks:{color:"#4a6080",font:{family:"DM Mono,monospace",size:10}}},
+        y:{grid:{color:"rgba(255,255,255,0.05)"},
+          ticks:{color:"#4a6080",font:{family:"DM Mono,monospace",size:10},callback:v=>"£"+(v/1000).toFixed(0)+"k"}}
+      }
+    },
+    plugins:[{
+      id:"zeroLine",
+      afterDraw(chart){
+        const {ctx,chartArea:{left,right},scales:{y}}=chart;
+        const yp=y.getPixelForValue(0);
+        ctx.save();ctx.strokeStyle="#00e87a";ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+        ctx.beginPath();ctx.moveTo(left,yp);ctx.lineTo(right,yp);ctx.stroke();
+        ctx.fillStyle="#00e87a";ctx.font="10px 'DM Mono',monospace";ctx.textAlign="left";
+        ctx.fillText("CAPEX Recovered",left+6,yp-5);
+        ctx.restore();
+      }
+    }]
+  });
+}
+
+/* ── SCENARIO CHART ──────────────────────────────────────────── */
+function buildScChart(){
+  const ctx=document.getElementById("scChart").getContext("2d");
+  scChart=new Chart(ctx,{
+    type:"line",
+    data:{
+      labels:data.map(d=>d.cal.split(" ")[0]),
+      datasets:[{
+        label:"This Projection",data:data.map(d=>d.tot),
+        borderColor:"white",borderWidth:2.5,tension:.35,
+        pointRadius:3,pointBackgroundColor:"white",fill:false
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},
+        tooltip:{backgroundColor:"#0d1624",borderColor:"rgba(255,255,255,0.12)",borderWidth:1,
+          titleFont:{family:"Syne,sans-serif",size:12},bodyFont:{family:"DM Mono,monospace",size:11},
+          callbacks:{title:i=>data[i[0].dataIndex].cal,label:i=>" Revenue: "+fmt(i.raw)}}
+      },
+      scales:{
+        x:{grid:{display:false},ticks:{color:"#4a6080",font:{family:"DM Mono,monospace",size:11}}},
+        y:{grid:{color:"rgba(255,255,255,0.05)"},
+          ticks:{color:"#4a6080",font:{family:"DM Mono,monospace",size:10},callback:v=>"£"+(v/1000).toFixed(0)+"k"},
+          min:0,max:70000}
+      }
+    },
+    plugins:[{
+      id:"scLines",
+      afterDraw(chart){
+        const {ctx,chartArea:{left,right},scales:{y}}=chart;
+        [{v:OPEX,c:"#ff5757",l:"OpEx £20.9k"},{v:WORST,c:"#ff8c42",l:"Worst £27k"},
+         {v:BELOW,c:"#ffb547",l:"Below Comp £33.3k"},{v:REAL,c:"#00c8ff",l:"Realistic £54.8k"},
+         {v:OPT,c:"#9b7fff",l:"Optimistic £58.2k"}].forEach(s=>{
+          const yp=y.getPixelForValue(s.v);
+          ctx.save();ctx.strokeStyle=s.c;ctx.lineWidth=2;ctx.setLineDash([6,4]);
+          ctx.beginPath();ctx.moveTo(left,yp);ctx.lineTo(right,yp);ctx.stroke();
+          ctx.fillStyle=s.c;ctx.font="9px 'DM Mono',monospace";ctx.textAlign="right";
+          ctx.fillText(s.l,right-4,yp-4);ctx.restore();
+        });
+      }
+    }]
+  });
+}
+
+/* ── MONTH NAV ───────────────────────────────────────────────── */
+function buildMonthNav(){
+  document.getElementById("month-nav").innerHTML=data.map(d=>{
+    const m=ms[d.m];
+    return`<button class="mbtn${d.m===selMonth?" active":""}" onclick="selectMonth('${d.m}')"
+      style="border-color:${d.m===selMonth?(m?.color||"#00e87a"):"rgba(255,255,255,0.07)"}">
+      ${hols[d.m]?'<div class="hols-dot"></div>':""}
+      <span class="mi">${m?.icon||"📅"}</span>
+      <span class="mm">${d.cal.split(" ")[0]}</span>
+      <span class="ml">${d.m}</span>
+    </button>`;
+  }).join("");
+}
+
+/* ── DETAIL PANEL ────────────────────────────────────────────── */
+function buildDetail(){
+  const d=data.find(x=>x.m===selMonth);
+  const m=ms[d.m];
+  if(!m)return;
+
+  const driverNote=(d.drC>0||d.drB>0||d.drX>0)?
+    `<div class="driver-note"><span>Court hire boosted by: </span>${[
+      d.drC>0?"coaching/events ("+fmt(d.drC)+" gross)":"",
+      d.drB>0?"holiday bundles ("+fmt(d.drB)+" gross)":"",
+      d.drX>0?"club credit ("+fmt(d.drX)+" gross)":""
+    ].filter(Boolean).join(" · ")} — all included net within court hire revenue</div>`:"";
+
+  const occPct=Math.min(100,Math.round(d.occ*100));
+  const capexPct=Math.min(100,Math.round((CAPEX+d.cumul)/CAPEX*100));
+  const capexC=d.cumul>=0?"#00e87a":"#ffb547";
+
+  const mixSegs=[
+    {k:"net",c:"#00e87a"},{k:"cafe",c:"#ffb547"},{k:"mbr",c:"#ff6eb4"}
+  ].filter(s=>d[s.k]>0);
+
+  document.getElementById("detail-panel").style.background=m.color+"0d";
+  document.getElementById("detail-panel").style.border=`1px solid ${m.color}2a`;
+  document.getElementById("detail-panel").innerHTML=`
+    <div class="dh">
+      <div class="dh-left">
+        <div class="d-icon">${m.icon}</div>
+        <div>
+          <div class="badges">
+            <span class="badge" style="background:${m.color}28;color:${m.color};border:1px solid ${m.color}44">${m.badge}</span>
+            ${hols[d.m]?`<span class="badge" style="background:rgba(155,127,255,0.15);color:#9b7fff;border:1px solid rgba(155,127,255,0.3)">${hols[d.m]}</span>`:""}
+          </div>
+          <div class="d-title">${d.cal} — ${m.title}</div>
+          <div class="d-sub">${m.headline}</div>
+        </div>
+      </div>
+      <div style="text-align:right;min-width:130px">
+        <div class="d-rev">${fmt(d.tot)}</div>
+        <div class="d-profit">Profit: ${fmt(d.profit)}</div>
+        <div class="d-rate">${pricing(d.m)}</div>
+      </div>
+    </div>
+    <div class="metrics">
+      <div>
+        <div class="m-label">Court Occupancy</div>
+        <div class="occ-bar">
+          <div class="occ-track"><div class="occ-fill" style="width:${occPct}%;background:${occC(d.occ)}"></div></div>
+          <span class="occ-pct" style="color:${occC(d.occ)}">${pct(d.occ)}</span>
+        </div>
+      </div>
+      <div>
+        <div class="m-label">Playtomic Fee (4%)</div>
+        <div style="font-size:13px;font-weight:700;color:#ff5757;font-family:var(--mono)">(${fmt(d.fee)})</div>
+        <div style="font-size:9px;color:#4a6080;font-family:var(--mono)">deducted from court hire</div>
+      </div>
+      <div>
+        <div class="m-label">CAPEX Recovery</div>
+        <div class="occ-bar">
+          <div class="occ-track"><div class="occ-fill" style="width:${capexPct}%;background:${capexC}"></div></div>
+          <span class="occ-pct" style="color:${capexC}">${capexPct}%</span>
+        </div>
+        <div style="font-size:9px;color:${d.cumul>=0?"#00e87a":"#4a6080"};font-family:var(--mono);margin-top:2px">
+          ${d.cumul>=0?"✅ Recovered":fmt(Math.abs(d.cumul))+" remaining"}
+        </div>
+      </div>
+      <div>
+        <div class="m-label">Revenue Mix</div>
+        <div class="mix-bar">${mixSegs.map(s=>`<div class="mix-seg" style="width:${Math.round(d[s.k]/d.tot*100)}%;background:${s.c}"></div>`).join("")}</div>
+        <div class="mix-labels">${[
+          {k:"net",c:"#00e87a",l:"Court"},
+          {k:"cafe",c:"#ffb547",l:"Café"},
+          {k:"mbr",c:"#ff6eb4",l:"Mbr"}
+        ].filter(s=>d[s.k]>0).map(s=>`<span class="mix-lbl" style="color:${s.c}">${s.l}: ${Math.round(d[s.k]/d.tot*100)}%</span>`).join("")}</div>
+      </div>
+    </div>
+    ${driverNote}
+    <ul class="bullets">${m.bullets.map(b=>`<li><span class="arr" style="color:${m.color}">▸</span>${b}</li>`).join("")}</ul>
+  `;
+}
+
+/* ── DATA TABLE ──────────────────────────────────────────────── */
+function buildTable(){
+  document.getElementById("tbl-body").innerHTML=data.map((d,i)=>`
+    <div class="tbl-row${d.m===selMonth?" active":""}" onclick="selectMonth('${d.m}')"
+      style="background:${i%2===0?"transparent":"rgba(255,255,255,0.01)"}">
+      <div class="td" style="color:#e2eaf8;font-weight:${d.m===selMonth?600:400}">
+        ${d.cal} ${ms[d.m]?.icon||""}${hols[d.m]?" 🎒":""}
+      </div>
+      <div class="td" style="color:${occC(d.occ)};font-weight:600">${pct(d.occ)}</div>
+      <div class="td" style="color:#4a6080">£${d.rate.toFixed(0)}</div>
+      <div class="td" style="color:#00e87a">${fmt(d.net)}<span style="color:#4a6080;font-size:9px"> (-${fmt(d.fee)})</span></div>
+      <div class="td" style="color:#ffb547">${fmt(d.cafe)}</div>
+      <div class="td" style="color:#ff6eb4">${d.mbr>0?fmt(d.mbr):"—"}</div>
+      <div class="td"><span style="color:#e2eaf8;font-weight:700">${fmt(d.tot)}</span><span style="color:#00e87a;font-size:9px;margin-left:4px">+${fmt(d.profit)}</span></div>
+    </div>`).join("");
+
+  document.getElementById("tbl-foot").innerHTML=`
+    <div class="td" style="color:#00e87a;font-weight:700;font-family:var(--display)">YEAR TOTAL</div>
+    <div class="td" style="color:#4a6080">avg ${pct(data.reduce((s,d)=>s+d.occ,0)/12)}</div>
+    <div class="td"></div>
+    <div class="td" style="color:#00e87a;font-weight:700">${fmt(sum("net"))}<span style="color:#ff5757;font-size:9px"> (-${fmt(totalFees)})</span></div>
+    <div class="td" style="color:#ffb547;font-weight:700">${fmt(sum("cafe"))}</div>
+    <div class="td" style="color:#ff6eb4;font-weight:700">${fmt(sum("mbr"))}</div>
+    <div class="td"><span style="color:#e2eaf8;font-weight:700;font-family:var(--display)">${fmt(totalRev)}</span><span style="color:#00e87a;font-size:9px;margin-left:4px">+${fmt(totalProfit)}</span></div>
+  `;
+}
+
+/* ── CAPEX TABLE ─────────────────────────────────────────────── */
+function buildCapexTable(){
+  document.getElementById("cpx-body").innerHTML=data.map((d,i)=>{
+    const isPB=d.m==="M11";
+    const status=isPB?"✅ CAPEX Recovered":d.cumul>=0?"✅ In surplus":fmt(Math.abs(d.cumul))+" remaining";
+    return`<div class="cpx-row${isPB?" pb-row":""}" style="background:${isPB?"rgba(0,232,122,0.08)":i%2===0?"transparent":"rgba(255,255,255,0.01)"}">
+      <div class="td" style="color:#e2eaf8;font-weight:${isPB?700:400}">${d.cal}${isPB?" ⭐":""}</div>
+      <div class="td" style="color:#00e87a">${fmt(d.tot)}</div>
+      <div class="td" style="color:#00e87a">${fmt(d.profit)}</div>
+      <div class="td" style="color:${d.cumul>=0?"#00e87a":"#ff5757"};font-weight:${d.cumul>=0?700:400}">
+        ${d.cumul>=0?"+"+fmt(d.cumul):"("+fmt(Math.abs(d.cumul))+")"}</div>
+      <div class="td" style="color:${isPB?"#00e87a":d.cumul>=0?"#00e87a":"#4a6080"};font-weight:${isPB?700:400}">${status}</div>
+    </div>`;
+  }).join("");
+
+  document.getElementById("cpx-foot").innerHTML=`
+    <div class="td" style="color:#00e87a;font-weight:700;font-family:var(--display)">YEAR TOTAL</div>
+    <div class="td" style="color:#00e87a;font-weight:700">${fmt(totalRev)}</div>
+    <div class="td" style="color:#00e87a;font-weight:700">${fmt(totalProfit)}</div>
+    <div class="td" style="color:#00e87a;font-weight:700">+${fmt(data[11].cumul)}</div>
+    <div class="td" style="color:#00e87a">Surplus after payback</div>
+  `;
+}
+
+/* ── SCENARIO CARDS ──────────────────────────────────────────── */
+function buildScCards(){
+  const scenarios=[
+    {label:"Worst Case",        annual:324480,monthly:WORST, color:"#ff8c42",
+     desc:"Conservative floor — below-competitor utilisation, minimal events programme",tag:"39 hrs/court/wk"},
+    {label:"Below Competitors", annual:399360,monthly:BELOW, color:"#ffb547",
+     desc:"Moderate fill — below the occupancy rates of existing Coventry clubs",tag:"48 hrs/court/wk"},
+    {label:"This Projection",   annual:totalRev,monthly:Math.round(totalRev/12),color:"#00e87a",
+     desc:"Conservative Year 1 ramp — staged growth, proving the model before scaling",tag:"Conservative build"},
+    {label:"Realistic",         annual:657280,monthly:REAL,  color:"#00c8ff",
+     desc:"Matches the occupancy rates of existing full-capacity Coventry clubs",tag:"79 hrs/court/wk"},
+    {label:"Optimistic",        annual:698880,monthly:OPT,   color:"#9b7fff",
+     desc:"Maximum Year 1 scenario — full peak utilisation with strong off-peak fill",tag:"84 hrs/court/wk"},
+  ];
+  document.getElementById("sc-cards").innerHTML=scenarios.map(s=>`
+    <div class="sc-card" style="border-top-color:${s.color};border-color:${s.color}33">
+      <div class="sc-name" style="color:${s.color}">${s.label}</div>
+      <div class="sc-annual" style="color:${s.color}">${fmt(s.annual)}</div>
+      <div class="sc-monthly">${fmt(s.monthly)} / month avg</div>
+      <div class="sc-desc">${s.desc}</div>
+      <div class="sc-tag" style="color:${s.color}">${s.tag}</div>
+    </div>`).join("");
+}
+
+/* ── SELECT MONTH ────────────────────────────────────────────── */
+function selectMonth(m){
+  selMonth=m;
+  buildMonthNav();
+  buildDetail();
+  buildTable();
+}
+
+/* ── SWITCH TAB ──────────────────────────────────────────────── */
+function switchTab(id,el){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  el.classList.add("active");
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+  document.getElementById("panel-"+id).classList.add("active");
+  // Resize charts after reveal
+  setTimeout(()=>{
+    if(id==="revenue"&&revChart)revChart.resize();
+    if(id==="capex"&&capexChart)capexChart.resize();
+    if(id==="scenarios"&&scChart)scChart.resize();
+  },50);
+}
+
+/* ── INIT ────────────────────────────────────────────────────── */
+buildMonthNav();
+buildDetail();
+buildTable();
+buildCapexTable();
+buildScCards();
+buildRevChart();
+buildCapexChart();
+buildScChart();
+</script>
+</body>
+</html>
